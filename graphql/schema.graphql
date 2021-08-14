@@ -7,14 +7,19 @@ scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date
 type Query {
     users(page:Int=null, count:Int=null,name:String=null):[User!]! @field(resolver:"UserQuery@paginate")  @guard(with: ["api"])
     user(id: ID @eq): User @find  @guard(with: ["api"])
-  
+    events:[Event!]!  @all 
+    event(id: ID @eq): Event @find  
+    posts: [Post!]! @all
+    post(id: Int! @eq): Post @find
 }
 type Mutation {
     createUser(name: String! @rules(apply: ["required"]),password:String @hash  @rules(apply: ["required","min:8"]),email:String @rules(apply: ["required", "email", "unique:users,email"])): User! @create
     updateUser(id: ID!, name: String,password:String @hash,email:String): User @update
     deleteUser(id: ID!): User @delete
+
     createEvent(event_name: String!,user_id:Int!,image:String!): Event! @create
-  
+    updateEvent(event_name: String!,user_id:Int!,image:String!): Event! @create
+    deleteEvent(event_name: String!,user_id:Int!,image:String!): Event! @create
    
 }
 type User {
@@ -23,6 +28,31 @@ type User {
     email: String!
     created_at: DateTime!
     updated_at: DateTime!
+    posts: [Post!]! @hasMany
+    events: [Event!]! @hasMany
+ 
+}
+
+type Post {
+    id: ID!
+    user_id:Int!
+    post_name: String!
+    image: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+    user: User! @belongsTo
+    comments: [Comment!]! @hasMany
+}
+
+type Comment {
+    id: ID!
+    user_id:Int!
+    post_id: String!
+    comment: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+    post: Post! @belongsTo
+  
 }
 type Event {
     id: ID!
@@ -31,13 +61,6 @@ type Event {
     image: String!
     created_at: DateTime!
     updated_at: DateTime!
-}
-
-input CreateEventInput {
-    id: ID!
-    event_name: String!
-    image: String!
-    created_at: DateTime!
-    updated_at: DateTime!
+    user: User! @belongsTo
 }
 

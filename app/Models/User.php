@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Passport\HasApiTokens;
+use App\Models\Event;
 class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
@@ -40,6 +41,11 @@ class User extends Authenticatable
 
     public function posts(): HasMany
     {
-        return $this->hasMany(Post::class, 'author_id');
+        return $this->hasMany(Post::class, 'user_id');
     }
+    public function events(): HasMany
+    {
+        return $this->hasMany(Event::class, 'user_id');
+    }
+   
 }
